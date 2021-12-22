@@ -1,5 +1,9 @@
+import Layout from "../components/Layout/Layout"
+
 export default function Home() {
   return (
-    <div>Olá Brandes</div>
+    <Layout>
+      
+    </Layout>
   )
 }

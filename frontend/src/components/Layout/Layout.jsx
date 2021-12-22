@@ -1,16 +1,35 @@
 import React from 'react'
+import { createGlobalStyle } from 'styled-components';
+
+import Footer from '../Footer/Footer';
+import Navbar from '../Navbar/Navbar';
 
 import {
-  MainContainer
+  MainContainer,
+  Content
 } from './Layout.styled';
+
+
+const GlobalStyle = createGlobalStyle`
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+  }
+`;
 
 export const Layout = ({children}) => {
   return (
-    <MainContainer>
-      <Navbar/>
-      {children}
-      <Footer/>
-    </MainContainer>
+    <>
+      <GlobalStyle/>
+      <MainContainer>
+        <Navbar/>
+        <Content>
+          {children}
+        </Content>
+        <Footer/>
+      </MainContainer>
+    </>
   )
 }
 
