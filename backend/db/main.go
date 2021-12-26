@@ -1,18 +1,18 @@
 package db
 
 import (
-	"context"
+	"database/sql"
 	"fmt"
 	"log"
 	"os"
 	"strconv"
 
 	"github.com/bwmarrin/snowflake"
-	"github.com/jackc/pgx/v4/pgxpool"
+	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
 // pg connection pool (thread-safe)
-var Pool *pgxpool.Pool
+var DB *sql.DB
 
 // snowflake node (thread-safe)
 var snowflakeNode *snowflake.Node
@@ -21,14 +21,18 @@ var snowflakeNode *snowflake.Node
 // the operation of the database
 func Init() {
 	// initialize psql pool
-	pool, err := pgxpool.Connect(context.Background(), fmt.Sprintf("postgresql://%s:%s@%s:%s/%s",
+	db, err := sql.Open("pgx", fmt.Sprintf("postgresql://%s:%s@%s:%s/%s",
 		os.Getenv("PG_USER"),
 		os.Getenv("PG_PASSWORD"),
 		os.Getenv("PG_HOST"),
 		os.Getenv("PG_PORT"),
 		os.Getenv("PG_DATABASE"),
 	))
-	Pool = pool
+	if err != nil {
+		log.Fatalf("could not connect to database: %v", err)
+	}
+
+	DB = db
 
 	if err != nil {
 		log.Fatalf("Error connecting to the database: %v\n", err)

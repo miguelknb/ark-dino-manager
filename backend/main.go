@@ -1,11 +1,12 @@
 package main
 
 import (
+	"log"
 	"net/http"
 	"os"
 
 	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/cookie"
+	"github.com/gin-contrib/sessions/postgres"
 	"github.com/gin-gonic/gin"
 
 	"github.com/miguelknb/ark-dino-manager/db"
@@ -19,7 +20,11 @@ func main() {
 	db.Init()
 
 	// setup cookie session
-	sess := cookie.NewStore([]byte(os.Getenv("SESSION_SECRET")))
+	sess, err := postgres.NewStore(db.DB, []byte(os.Getenv("SESSION_SECRET")))
+	if err != nil {
+		log.Fatalf("Coult not initialize cookie store: %v", err)
+	}
+
 	sess.Options(sessions.Options{
 		MaxAge:   30 * 60 * 60 * 24,
 		Path:     "/",

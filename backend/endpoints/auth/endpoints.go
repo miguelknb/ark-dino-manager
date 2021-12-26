@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/georgysavva/scany/pgxscan"
+	"github.com/georgysavva/scany/sqlscan"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgconn"
@@ -50,8 +50,7 @@ func register(c *gin.Context) {
 	// generate snowflake
 	id := db.GenerateId()
 
-	_, err = db.Pool.Exec(
-		context.Background(),
+	_, err = db.DB.Exec(
 		"INSERT INTO users (id, username, email, password_hash) VALUES ($1, $2, $3, $4)",
 		id, username, email, hash,
 	)
@@ -98,7 +97,7 @@ func login(c *gin.Context) {
 	password := strings.Trim(body.Password, " ")
 
 	var users []*db.User
-	err := pgxscan.Select(context.Background(), db.Pool, &users, "SELECT id, username, email, password_hash FROM users WHERE email = $1 OR username = $1", username)
+	err := sqlscan.Select(context.Background(), db.DB, &users, "SELECT id, username, email, password_hash FROM users WHERE email = $1 OR username = $1", username)
 	if err != nil {
 		log.Printf("ERROR: %s\n", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "An error occurred while processing your request"})
