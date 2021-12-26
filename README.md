@@ -1,3 +1,4 @@
 # Ark Dinosaur Manager
+An easy, quick and collaborative way to manage and breed your dinos in Ark: Survival Evolved!
 
-### An easy, quick and funny way to manage and breed your dinos in Ark!
+This is currently in progress, no version is currently deployed.
