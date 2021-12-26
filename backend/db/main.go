@@ -11,9 +11,14 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
+// pg connection pool (thread-safe)
 var Pool *pgxpool.Pool
+
+// snowflake node (thread-safe)
 var snowflakeNode *snowflake.Node
 
+// This function will initialize everything needed for
+// the operation of the database
 func Init() {
 	// initialize psql pool
 	pool, err := pgxpool.Connect(context.Background(), fmt.Sprintf("postgresql://%s:%s@%s:%s/%s",
@@ -47,4 +52,10 @@ func Init() {
 
 	snowflakeNode = node
 	log.Printf("Initialized snowflake node %d\n", node_id)
+}
+
+// This function will return a Snowflake ID
+// to be used as primary key for tables that require it
+func GenerateId() int64 {
+	return snowflakeNode.Generate().Int64()
 }
