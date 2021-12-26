@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/georgysavva/scany/pgxscan"
-	"github.com/gin-gonic/contrib/sessions"
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgerrcode"
@@ -73,6 +73,7 @@ func register(c *gin.Context) {
 		return
 	}
 
+	log.Printf("User %d created\n", id)
 	c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("Account created with ID %d", id)})
 }
 
@@ -124,5 +125,26 @@ func login(c *gin.Context) {
 		return
 	}
 
+	log.Printf("User %d logged in\n", user.ID)
 	c.JSON(http.StatusOK, gin.H{"message": "Authentication successful"})
+}
+
+func logout(c *gin.Context) {
+	session := sessions.Default(c)
+	userid := session.Get("userid")
+
+	if userid == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "User is not logged in"})
+		return
+	}
+
+	session.Delete("userid")
+	if err := session.Save(); err != nil {
+		log.Printf("ERROR: %s\n", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "An error occurred while processing your request"})
+		return
+	}
+
+	log.Printf("User %d logged out\n", userid)
+	c.JSON(http.StatusOK, gin.H{"message": "Logout successful"})
 }

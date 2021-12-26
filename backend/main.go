@@ -2,8 +2,10 @@ package main
 
 import (
 	"net/http"
+	"os"
 
-	"github.com/gin-gonic/contrib/sessions"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 
 	"github.com/miguelknb/ark-dino-manager/db"
@@ -17,7 +19,14 @@ func main() {
 	db.Init()
 
 	// setup cookie session
-	r.Use(sessions.Sessions("login-session", sessions.NewCookieStore([]byte("TODOsecret"))))
+	sess := cookie.NewStore([]byte(os.Getenv("SESSION_SECRET")))
+	sess.Options(sessions.Options{
+		MaxAge:   30 * 60 * 60 * 24,
+		Path:     "/",
+		Secure:   true,
+		HttpOnly: true,
+	})
+	r.Use(sessions.Sessions("login", sess))
 
 	// authentication routes
 	auth.Routes(r)

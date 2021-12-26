@@ -11,5 +11,6 @@ func Routes(r *gin.Engine) {
 	{
 		auth.POST("/login", login)
 		auth.POST("/register", register)
+		auth.GET("/logout", logout)
 	}
 }
